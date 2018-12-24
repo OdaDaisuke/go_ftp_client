@@ -52,7 +52,7 @@ func NextView(g *gocui.Gui) error {
 		next = 0
 	}
 
-	if _, err := g.SetCurrentView(store.FtpConnectionList[next]); err != nil {
+	if _, err := g.SetCurrentView(store.FtpConnectionList[next].Name); err != nil {
 		return err
 	}
 
@@ -66,7 +66,7 @@ func PrevView(g *gocui.Gui) error {
 		next = len(store.FtpConnectionList) - 1
 	}
 
-	if _, err := g.SetCurrentView(store.FtpConnectionList[next]); err != nil {
+	if _, err := g.SetCurrentView(store.FtpConnectionList[next].Name); err != nil {
 		return err
 	}
 
@@ -84,7 +84,7 @@ func DelView(g *gocui.Gui) error {
 		return nil
 	}
 
-	if err := g.DeleteView(store.FtpConnectionList[store.CurView]); err != nil {
+	if err := g.DeleteView(store.FtpConnectionList[store.CurView].Name); err != nil {
 		return err
 	}
 	curView := store.CurView

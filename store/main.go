@@ -1,8 +1,9 @@
 package store
 
+import "github.com/OdaDaisuke/go-ftp-client/lib"
+
 var (
-	// TODO: リストをfileClientに移譲
-	FtpConnectionList = []string{"mysite", "mysite2", "mysite3"}
+	FtpConnectionList = []lib.ConnectionJsonModel{}
 	CurView           = -1
 	IdxView           = 0
 	InitY             = 7

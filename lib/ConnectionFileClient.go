@@ -1,4 +1,11 @@
-package main
+package lib
+
+import (
+	"github.com/OdaDaisuke/go-ftp-client/configs"
+	"io/ioutil"
+	"github.com/labstack/gommon/log"
+	"encoding/json"
+)
 
 type FileClient struct {
 }
@@ -23,8 +30,16 @@ func NewFileClient() *FileClient {
 	return &FileClient{}
 }
 
-func (f *FileClient) ReadAll() []*ConnectionJsonModel {
-	return nil
+func (f *FileClient) ReadAll() []ConnectionJsonModel {
+	bytes, err := ioutil.ReadFile(configs.CONNECTIONS_FILE_NAME)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var connList []ConnectionJsonModel
+	if err := json.Unmarshal(bytes, &connList); err != nil {
+		log.Fatal(err)
+	}
+	return connList
 }
 
 func (f *FileClient) AddConnection(list *ConnectionJsonModel) *ConnectionJsonModel {
@@ -35,7 +50,6 @@ func (f *FileClient) AddConnection(list *ConnectionJsonModel) *ConnectionJsonMod
 func (f *FileClient) UpdateConnection(conn *ConnectionJsonModel) *ConnectionJsonModel {
 	return nil
 }
-
 
 func (f *FileClient) DeleteConnection(conn *ConnectionJsonModel) {
 }

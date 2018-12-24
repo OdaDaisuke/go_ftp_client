@@ -5,6 +5,7 @@ import (
 	"log"
 	"github.com/jroimartin/gocui"
 	"github.com/OdaDaisuke/go-ftp-client/store"
+	"github.com/OdaDaisuke/go-ftp-client/lib"
 	"github.com/OdaDaisuke/go-ftp-client/keybinds"
 )
 
@@ -48,22 +49,25 @@ func renderLayout(g *gocui.Gui) error {
 }
 
 func renderMainMenu(g *gocui.Gui) error {
+	fc := lib.NewFileClient()
+	store.FtpConnectionList = fc.ReadAll()
 	initY := store.InitY
-	// TODO: fileClientから読み込んだものを描画
-	for i, name := range store.FtpConnectionList {
+
+	for i, conn := range store.FtpConnectionList {
 		y0, y1 := ( 3 * i ) + initY, ( i * 3 + 2 ) + initY
 		if i == 0 {
 			y0 = initY
 		}
 
-		v, err := g.SetView(name, 0, y0, 30, y1)
-		fmt.Fprintln(v, name)
+		v, err := g.SetView(conn.Name, 0, y0, 30, y1)
+		fmt.Fprintln(v, conn.Name)
 		if err != gocui.ErrUnknownView {
 			return err
 		}
 	}
 
-	if _, err := g.SetCurrentView(store.FtpConnectionList[0]); err != nil {
+	idx := len(store.FtpConnectionList) - 1
+	if _, err := g.SetCurrentView(store.FtpConnectionList[idx].Name); err != nil {
 		return err
 	}
 	return nil
