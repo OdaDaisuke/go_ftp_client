@@ -1,6 +1,9 @@
 package lib
 
-import "github.com/jlaffaye/ftp"
+import (
+	"github.com/jlaffaye/ftp"
+	"fmt"
+)
 
 type FTPClient struct {
 	serverConn *(ftp.ServerConn)
@@ -37,11 +40,20 @@ func (f *FTPClient) SetConf(
 	f.port = port
 }
 
-func (f *FTPClient) Connect() {
-	err := f.serverConn.Login(f.user, f.password)
+func (f *FTPClient) Connect() error {
+	var address string = fmt.Sprintf("%s:%d", f.host, f.port)
+	client, err := ftp.Dial(address)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	defer client.Quit()
+	f.serverConn = client
+
+	err = f.serverConn.Login(f.user, f.password)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (f *FTPClient) DisConnect() {

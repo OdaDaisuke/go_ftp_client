@@ -8,7 +8,12 @@ import (
 	"github.com/OdaDaisuke/go-ftp-client/lib"
 )
 
-func RenderMainMenu(g *gocui.Gui) error {
+type Menu struct {
+}
+
+func NewMenu() *Menu { return &Menu{} }
+
+func (m *Menu) Layout(g *gocui.Gui) error {
 	fc := lib.NewFileClient()
 	store.FtpConnectionList = fc.ReadAll()
 	initY := store.InitY
@@ -32,23 +37,33 @@ func RenderMainMenu(g *gocui.Gui) error {
 	return nil
 }
 
-func RenderConnDetail(g *gocui.Gui) error {
+type ConnDetail struct {
+	CurView lib.ConnectionJsonModel
+	FtpStatus string
+}
+
+func NewConnDetail() *ConnDetail { return &ConnDetail{FtpStatus: ""} }
+
+func (d *ConnDetail) Layout(g *gocui.Gui) error {
 	maxX, _ := g.Size()
-	v, err := g.SetView(store.DetailViewName, 21, store.InitY, maxX, 18)
+	v, err := g.SetView(store.DetailViewName, 21, store.InitY, maxX, 20)
 	if err != nil {
 		if err != gocui.ErrUnknownView {
 			return err
 		}
-		curView := store.FtpConnectionList[store.CurView]
+		d.CurView = store.FtpConnectionList[store.CurView]
 		fmt.Fprintln(v, "[Detail]")
-		fmt.Fprintf(v, "Host:     %s\n", curView.Name)
-		fmt.Fprintf(v, "User:     %s\n", curView.User)
-		fmt.Fprintf(v, "Port:     %d\n", curView.Port)
-		fmt.Fprintf(v, "Password: %s\n\n", strings.Repeat("*", len(curView.Password)))
-		fmt.Fprintln(v, "[Action]")
-		fmt.Fprintln(v, "> 1. Connect")
-		fmt.Fprintln(v, "> 2. Update")
-		fmt.Fprintln(v, "> 3. Delete")
+		fmt.Fprintf(v, "Name:     %s\n", d.CurView.Name)
+		fmt.Fprintf(v, "Host:     %s\n", d.CurView.Host)
+		fmt.Fprintf(v, "User:     %s\n", d.CurView.User)
+		fmt.Fprintf(v, "Port:     %d\n", d.CurView.Port)
+		fmt.Fprintf(v, "Password: %s\n\n", strings.Repeat("*", len(d.CurView.Password)))
+		if d.FtpStatus == "" {
+			fmt.Fprintln(v, "[Action]")
+			fmt.Fprintln(v, "> 1. Connect")
+			fmt.Fprintln(v, "> 2. Update")
+			fmt.Fprintln(v, "> 3. Delete")
+		}
 	}
 	return nil
 }
