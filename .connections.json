@@ -1,0 +1,10 @@
+[
+  {
+    "name": "SampleConnection",
+    "host": "localhost",
+    "ip_address": "127.0.0.1",
+    "port": 22,
+    "user": "addmin",
+    "password": "password"
+  }
+]
