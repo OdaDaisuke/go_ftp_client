@@ -3,6 +3,7 @@ package keybinds
 import (
 	"github.com/jroimartin/gocui"
 	"github.com/OdaDaisuke/go-ftp-client/store"
+	"github.com/OdaDaisuke/go-ftp-client/widgets"
 )
 
 func InitKeybindings(g *gocui.Gui) error {
@@ -36,6 +37,24 @@ func InitKeybindings(g *gocui.Gui) error {
 		}); err != nil {
 		return err
 	}
+	if err := g.SetKeybinding("", gocui.KeyArrowLeft, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return FocusConnList(g)
+		}); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyArrowRight, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return FocusConnDetail(g)
+		}); err != nil {
+		return err
+	}
+	if err := g.SetKeybinding("", gocui.KeyEnter, gocui.ModNone,
+		func(g *gocui.Gui, v *gocui.View) error {
+			return FocusConnDetail(g)
+		}); err != nil {
+			return err
+	}
 	if err := g.SetKeybinding("", 'e', gocui.ModNone,
 		func(g *gocui.Gui, v *gocui.View) error {
 			err := ToggleEditView(v)
@@ -57,6 +76,7 @@ func NextView(g *gocui.Gui) error {
 	}
 
 	store.CurView = next
+	reloadConnDetail(g)
 	return nil
 }
 
@@ -71,6 +91,21 @@ func PrevView(g *gocui.Gui) error {
 	}
 
 	store.CurView = next
+	reloadConnDetail(g)
+	return nil
+}
+
+func FocusConnList(g *gocui.Gui) error {
+	if _, err := g.SetCurrentView(store.FtpConnectionList[store.CurView].Name); err != nil {
+		return err
+	}
+	return nil
+}
+
+func FocusConnDetail(g *gocui.Gui) error {
+	if _, err := g.SetCurrentView(store.DetailViewName); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -91,4 +126,9 @@ func DelView(g *gocui.Gui) error {
 	store.FtpConnectionList = append(store.FtpConnectionList[:curView], store.FtpConnectionList[curView+1:]...)
 
 	return NextView(g)
+}
+
+func reloadConnDetail(g *gocui.Gui) {
+	g.DeleteView(store.DetailViewName)
+	widgets.RenderConnDetail(g)
 }
